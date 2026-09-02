@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OccasionAI — Smart Gift Recommendations & Admin Portal</title>
+  <meta name="description" content="AI-Powered Occasion Product Recommendation System and Admin Catalog Management." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ───────────────────────── NAVBAR ───────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand" id="brand-home-btn" style="cursor: pointer;">
+      <span class="brand-icon">✦</span>
+      <span class="brand-name">OccasionAI</span>
+    </div>
+
+    <!-- Toggle button in place of status -->
+    <div class="nav-actions">
+      <button class="admin-toggle-btn" id="admin-toggle-btn">
+        <span class="toggle-icon">🛡️</span>
+        <span class="toggle-text">Switch to Admin Portal</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ───────────────────────── VIEW 1: DISCOVER ───────────────────────── -->
+  <main id="view-discover" class="view-section active">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">🎁 AI-Powered Gift Finder</div>
+        <h1 class="hero-title">
+          Find the <span class="gradient-text">Perfect Gift</span><br/>
+          for Every Occasion
+        </h1>
+        <p class="hero-subtitle">
+          Enter any occasion and our AI instantly ranks the best products from our catalog using hybrid dense vector search + TF-IDF.
+        </p>
+
+        <!-- Search bar -->
+        <div class="search-container" role="search">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input
+              id="occasion-input"
+              type="text"
+              placeholder="e.g. Birthday, Diwali, Wedding…"
+              autocomplete="off"
+              aria-label="Enter occasion"
+              maxlength="100"
+            />
+            <button id="search-btn" class="search-btn" aria-label="Find recommendations">
+              <span class="btn-text">Discover</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+
+          <!-- Quick chips -->
+          <div class="chips-row" role="list" aria-label="Quick occasion filters">
+            <button class="chip" data-occasion="Birthday" role="listitem">🎂 Birthday</button>
+            <button class="chip" data-occasion="Wedding" role="listitem">💍 Wedding</button>
+            <button class="chip" data-occasion="Diwali" role="listitem">🪔 Diwali</button>
+            <button class="chip" data-occasion="Valentine's Day" role="listitem">❤️ Valentine</button>
+            <button class="chip" data-occasion="Anniversary" role="listitem">🥂 Anniversary</button>
+            <button class="chip" data-occasion="Office Party" role="listitem">🏢 Office Party</button>
+            <button class="chip" data-occasion="Mothers Day" role="listitem">🌸 Mother's Day</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTS SECTION -->
+    <section class="results-section" id="results-section" aria-live="polite">
+      <div class="results-header" id="results-header" hidden>
+        <div class="results-meta">
+          <h2 class="results-title" id="results-title">Recommendations</h2>
+          <span class="results-badge" id="results-count"></span>
+        </div>
+        <div class="results-occasion" id="results-occasion-label"></div>
+      </div>
+
+      <!-- Loading skeleton -->
+      <div class="loading-grid" id="loading-grid" hidden style="display: none;"></div>
+
+      <!-- Product grid -->
+      <div class="product-grid" id="product-grid" role="list"></div>
+
+      <!-- Empty / Initial Search State -->
+      <div class="empty-state" id="empty-state" hidden>
+        <div class="empty-icon">✨</div>
+        <h3 id="empty-title">Ready to Find the Best Gift?</h3>
+        <p id="empty-desc">Enter an occasion above (like <strong>Birthday</strong>, <strong>Diwali</strong>, or <strong>Wedding</strong>) or pick a popular theme below to generate AI recommendations.</p>
+        <div class="empty-actions">
+          <button class="chip active" data-occasion="Birthday">🎂 Try Birthday</button>
+          <button class="chip" data-occasion="Diwali">🪔 Try Diwali</button>
+          <button class="chip" data-occasion="Wedding">💍 Try Wedding</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ───────────────────────── VIEW 2: ADMIN CATALOG ───────────────────────── -->
+  <main id="view-admin" class="view-section" hidden>
+    <section class="admin-container">
+      <div class="admin-header">
+        <div>
+          <h1 class="admin-title">🛡️ Admin Product Catalog</h1>
+          <p class="admin-subtitle">Available catalog items indexed in vector database.</p>
+        </div>
+        <button class="btn-primary" id="go-add-product-btn">➕ Add New Product</button>
+      </div>
+
+      <div class="admin-stats">
+        <div class="stat-card">
+          <span class="stat-num" id="admin-product-count">0</span>
+          <span class="stat-label">Total Active Products</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num" id="admin-vector-engine">Qdrant Cloud</span>
+          <span class="stat-label">Vector Store</span>
+        </div>
+      </div>
+
+      <div class="admin-controls" style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+        <input type="text" id="admin-search-input" placeholder="Search by product name..." style="flex: 1; padding: 0.8rem; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #f8fafc;" />
+      </div>
+
+      <div class="table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Product Name</th>
+              <th>Brand</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="admin-table-body">
+            <!-- Dynamic products loaded here -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-controls" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; align-items: center;">
+        <button id="admin-prev-page" class="chip" disabled>← Previous</button>
+        <span id="admin-page-info" style="color: #94a3b8; font-size: 0.9rem;">Page 1 of 1</span>
+        <button id="admin-next-page" class="chip" disabled>Next →</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ───────────────────────── VIEW 3: ADD PRODUCT ───────────────────────── -->
+  <main id="view-add-product" class="view-section" hidden>
+    <section class="form-container">
+      <div class="form-card">
+        <h2 class="form-title">➕ Add Product & Generate Embedding</h2>
+        <p class="form-subtitle">Submitting this product will instantly trigger vector embedding generation and store it in Qdrant Vector DB.</p>
+
+        <form id="add-product-form">
+          <div class="form-group">
+            <label for="p-name">Product Name *</label>
+            <input type="text" id="p-name" required placeholder="e.g. Birthday Flowers & Rose Bouquet" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="p-brand">Brand</label>
+              <input type="text" id="p-brand" placeholder="e.g. Bloomify" />
+            </div>
+            <div class="form-group">
+              <label for="p-price">Price</label>
+              <input type="text" id="p-price" placeholder="e.g. $39.99" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="p-image">Main Image URL</label>
+            <input type="url" id="p-image" placeholder="https://images.unsplash.com/..." />
+          </div>
+
+          <div class="form-group">
+            <label for="p-desc">Unique Description (Used for Embeddings)</label>
+            <textarea id="p-desc" rows="3" placeholder="Detailed product attributes, features, materials, and occasion notes..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary full-width" id="submit-product-btn">
+            <span>✨ Save & Generate Vector Embedding</span>
+          </button>
+        </form>
+
+        <div id="form-alert" class="alert-box" hidden></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ───────────────────────── VIEW 4: ERROR / 404 PAGE ───────────────────────── -->
+  <main id="view-error" class="view-section" hidden>
+    <section class="error-page-container">
+      <div class="error-card">
+        <div class="error-code">404 / ⚠️</div>
+        <h2>API Disconnected or Page Not Found</h2>
+        <p>Could not communicate with the backend server at <code>http://localhost:8000</code>.</p>
+        <button class="chip" id="retry-conn-btn">🔄 Retry Connection</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ───────────────────────── FOOTER ───────────────────────── -->
+  <footer class="footer">
+    <p>OccasionAI · Built with FastAPI + Neural FAISS/Qdrant Vector Engine · <span id="year"></span></p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
