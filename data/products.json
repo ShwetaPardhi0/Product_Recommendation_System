@@ -3388,5 +3388,17 @@
     "stock": 50,
     "id": "prod_de82075f",
     "status": "ACTIVE"
+  },
+  {
+    "name": "HoneyMoon Package",
+    "brand": "GoAir",
+    "description": "Exploring the world, hand in hand.",
+    "shortDescription": "Exploring the world, hand in hand.",
+    "mainImage": "https://www.swantour.com/blogs/guide-to-irresistible-honeymoon-packages/",
+    "price": "$ 1000",
+    "discountPercentage": "0",
+    "stock": 50,
+    "id": "prod_85bb942a",
+    "status": "ACTIVE"
   }
 ]
