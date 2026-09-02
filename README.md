@@ -157,6 +157,7 @@ Dynamically adds a new product to the catalog, updates `products.json`, and trig
 ## 🛡️ Admin Portal Features
 
 - **Single Page View Switching**: Seamless navigation between Gift Finder and Admin Portal.
+- **Discover Gifts Pagination**: Page-by-page (6 items/page) recommendation browsing with smooth scrolling.
 - **Admin Search Bar**: Filter products live by title or brand.
 - **Catalog Pagination**: 10 products per page with intuitive Next/Prev controls.
 - **Dynamic Product Creation**: Instant embedding vector generation upon addition.
@@ -166,5 +167,5 @@ Dynamically adds a new product to the catalog, updates `products.json`, and trig
 
 ## 🤖 AI Assistance Statement
 
-AI coding assistants (such as ChatGPT and GitHub Copilot) were used selectively for frontend development, UI refinement, debugging, and development guidance. The architectural design, recommendation engine logic, vector database integrations, and final implementation were reviewed, tested, and validated.
+Antigravity was used for assistance with frontend development and UI refinement. The recommendation logic, architecture, and final implementation were reviewed and validated by me.
 

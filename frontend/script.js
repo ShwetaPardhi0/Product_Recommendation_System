@@ -224,6 +224,60 @@ function hideLoading() {
   loadingGrid.innerHTML = "";
 }
 
+// Recommendation pagination state
+const recPagination = document.getElementById("rec-pagination");
+const recPrevBtn    = document.getElementById("rec-prev-page");
+const recNextBtn    = document.getElementById("rec-next-page");
+const recPageInfo   = document.getElementById("rec-page-info");
+
+let recommendedProducts = [];
+let recCurrentPage = 1;
+const REC_PAGE_SIZE = 6;
+
+function renderRecommendationsPage() {
+  if (!recommendedProducts.length) {
+    if (recPagination) recPagination.style.display = "none";
+    return;
+  }
+
+  const totalPages = Math.ceil(recommendedProducts.length / REC_PAGE_SIZE) || 1;
+  if (recCurrentPage > totalPages) recCurrentPage = totalPages;
+  if (recCurrentPage < 1) recCurrentPage = 1;
+
+  const startIdx = (recCurrentPage - 1) * REC_PAGE_SIZE;
+  const pageProducts = recommendedProducts.slice(startIdx, startIdx + REC_PAGE_SIZE);
+
+  productGrid.innerHTML = "";
+  pageProducts.forEach((p, i) => productGrid.appendChild(buildCard(p, i)));
+
+  if (recPagination) {
+    recPagination.style.display = totalPages > 1 ? "flex" : "none";
+  }
+  if (recPageInfo) recPageInfo.textContent = `Page ${recCurrentPage} of ${totalPages}`;
+  if (recPrevBtn)  recPrevBtn.disabled = recCurrentPage === 1;
+  if (recNextBtn)  recNextBtn.disabled = recCurrentPage === totalPages;
+}
+
+if (recPrevBtn) {
+  recPrevBtn.addEventListener("click", () => {
+    if (recCurrentPage > 1) {
+      recCurrentPage--;
+      renderRecommendationsPage();
+      productGrid.scrollIntoView({ behavior: "smooth" });
+    }
+  });
+}
+if (recNextBtn) {
+  recNextBtn.addEventListener("click", () => {
+    const totalPages = Math.ceil(recommendedProducts.length / REC_PAGE_SIZE);
+    if (recCurrentPage < totalPages) {
+      recCurrentPage++;
+      renderRecommendationsPage();
+      productGrid.scrollIntoView({ behavior: "smooth" });
+    }
+  });
+}
+
 async function fetchRecommendations(occasion) {
   if (!occasion.trim()) return;
 
@@ -232,24 +286,25 @@ async function fetchRecommendations(occasion) {
   showLoading();
 
   try {
-    const res = await fetch(`${API_BASE}/api/recommend?occasion=${encodeURIComponent(occasion.trim())}&limit=${DEFAULT_LIMIT}`);
+    const res = await fetch(`${API_BASE}/api/recommend?occasion=${encodeURIComponent(occasion.trim())}&limit=24`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const data = await res.json();
-    const products = data.recommendations || [];
+    recommendedProducts = data.recommendations || [];
+    recCurrentPage = 1;
 
     hideLoading();
 
-    if (!products.length) {
+    if (!recommendedProducts.length) {
       emptyState.hidden = false;
+      if (recPagination) recPagination.style.display = "none";
     } else {
       productGrid.hidden = false;
       resultsHdr.hidden  = false;
-      resultsCount.textContent = `${products.length} Products Found`;
+      resultsCount.textContent = `${recommendedProducts.length} Products Found`;
       resultsOcc.textContent   = `Occasion Query: "${occasion}"`;
 
-      productGrid.innerHTML = "";
-      products.forEach((p, i) => productGrid.appendChild(buildCard(p, i)));
+      renderRecommendationsPage();
     }
   } catch (err) {
     console.error("API error:", err);
