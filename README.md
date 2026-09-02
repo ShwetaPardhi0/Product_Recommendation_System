@@ -154,6 +154,19 @@ Dynamically adds a new product to the catalog, updates `products.json`, and trig
 
 ---
 
+## 📸 UI Screenshots
+
+### 🏠 Home Page & Occasion Search
+![Home Page](screenshots/home-page.png)
+
+### 🎁 Occasion-Based Gift Recommendations
+![Recommendations](screenshots/recommendations.png)
+
+### 🛡️ Admin Product Catalog & Pagination
+![Admin Catalog](screenshots/admin-catalog.png)
+
+---
+
 ## 🛡️ Admin Portal Features
 
 - **Single Page View Switching**: Seamless navigation between Gift Finder and Admin Portal.
