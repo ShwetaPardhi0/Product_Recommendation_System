@@ -161,3 +161,10 @@ Dynamically adds a new product to the catalog, updates `products.json`, and trig
 - **Catalog Pagination**: 10 products per page with intuitive Next/Prev controls.
 - **Dynamic Product Creation**: Instant embedding vector generation upon addition.
 - **Robust Media Fallback**: Automatic image error handling with DOM initial placeholders.
+
+---
+
+## 🤖 AI Assistance Statement
+
+AI coding assistants (such as ChatGPT and GitHub Copilot) were used selectively for frontend development, UI refinement, debugging, and development guidance. The architectural design, recommendation engine logic, vector database integrations, and final implementation were reviewed, tested, and validated.
+
