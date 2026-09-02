@@ -1,107 +1,151 @@
-# OccasionAI — AI/ML Hybrid Product Recommendation System
+# OccasionAI — Neural Hybrid Product Recommendation Engine
 
-> **AI/ML Engineer Take-Home Assignment**
-> An intelligent, hybrid semantic gift recommendation system powered by **SentenceTransformers (`all-MiniLM-L6-v2`)**, **FAISS Vector Search**, and **TF-IDF Lexical Matching**.
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Backend** | Python 3.10+ · FastAPI · Uvicorn |
-| **Embedding Model** | `all-MiniLM-L6-v2` (Sentence Transformers, 384-d dense vectors) |
-| **Vector Search** | FAISS (`IndexFlatIP` — Cosine Similarity on L2-normalized vectors) |
-| **Lexical Engine** | TF-IDF (word + n-grams) + Synonym Expansion |
-| **Frontend** | Vanilla HTML5 · CSS3 (Glassmorphism) · JavaScript (Fetch API) |
-| **Data** | `products.json` (108 active product items) |
+> **Production-Ready Neural Hybrid Gift Recommendation System**  
+> Powered by **FastAPI**, **SentenceTransformers (`all-MiniLM-L6-v2`)**, **Qdrant Vector DB / FAISS**, **TF-IDF Lexical Matching**, **RapidFuzz Typo Tolerance**, and **MMR Diversity Re-Ranking**.
 
 ---
 
-## 🏗️ Recommendation Engine Architecture
+## 🛠️ Tech Stack & Architecture
+
+| Layer | Technology & Implementation Details |
+|-------|-------------------------------------|
+| **Backend Framework** | Python 3.10+ · FastAPI · Uvicorn (Asynchronous REST API) |
+| **Dense Vector Model** | `all-MiniLM-L6-v2` (SentenceTransformers, 384-dimensional dense embeddings) |
+| **Vector Engines** | **Qdrant Cloud** (Remote Cluster) / **FAISS** (`IndexFlatIP` Cosine Similarity) |
+| **Lexical Engine** | TF-IDF (Unigram + Bigram sparse matrix) |
+| **Diversity & Re-Ranking** | Maximal Marginal Relevance (MMR) + RapidFuzz category deduplication |
+| **Frontend SPA** | Single Page Application (HTML5, Vanilla CSS3 Glassmorphism, JS Fetch API) |
+| **Product Database** | `data/products.json` (Dynamic read/write persistence with real-time vector indexing) |
+
+---
+
+## 🏗️ Recommender Pipeline Architecture
 
 ```
-                               Occasion Input (e.g. "Birthday")
-                                              │
-                    ┌─────────────────────────┴─────────────────────────┐
-                    ▼                                                   ▼
-       Dense Vector Embedding                                Lexical TF-IDF Engine
-     (SentenceTransformers 384-d)                           (Word + N-gram Vector)
-                    │                                                   │
-                    ▼                                                   ▼
-            FAISS Index Search                                 Lexical Similarity
-        (faiss.IndexFlatIP cosine)                              (scikit-learn)
-                    │                                                   │
-                    └─────────────────────────┬─────────────────────────┘
-                                              ▼
-                                   Hybrid Score Ensemble
-                      (0.50 * FAISS_Dense + 0.35 * TFIDF_Lexical + 0.15 * Keyword_Boost)
-                                              │
-                                              ▼
-                                    Top N Ranked Products
+                                Occasion Query Input (e.g. "Birthday", "Diwali")
+                                                       │
+                           ┌───────────────────────────┴───────────────────────────┐
+                           ▼                                                       ▼
+             Dense Vector Search (Qdrant/FAISS)                         Lexical Search (TF-IDF)
+          Cosine Similarity on 384-d Embeddings                       Sparse N-gram Matrix Matching
+                           │                                                       │
+                           ▼                                                       ▼
+                      Dense Scores                                            Lexical Scores
+                           │                                                       │
+                           └───────────────────────────┬───────────────────────────┘
+                                                       ▼
+                                            Ensemble Scoring Engine
+                                  (0.55 * Dense + 0.20 * TF-IDF + 0.15 * Title 
+                                   + 0.10 * Keyword - Mismatch Penalties)
+                                                       │
+                                                       ▼
+                                            MMR Diversity Re-Ranking
+                                    (Maximal Marginal Relevance Lambda = 0.75)
+                                                       │
+                                                       ▼
+                                            Top Recommended Products
 ```
 
 ---
 
-## 🚀 Quick Start
+## � Modular Folder Structure
 
-### 1. Requirements
+```text
+Product_Recommendation_System/
+├── backend/
+│   ├── .env                       # Environment credentials (Qdrant Endpoint, API Key, VECTOR_DB_TYPE)
+│   ├── requirements.txt           # Python dependencies
+│   └── app/
+│       ├── main.py                # FastAPI entrypoint & REST API endpoints
+│       ├── core/
+│       │   └── config.py          # Centralized configuration & environment setup
+│       └── services/
+│           ├── vector_db.py       # Pluggable Vector DB abstraction (BaseVectorDB, FAISSVectorDB, QdrantVectorDB)
+│           └── recommender/
+│               ├── __init__.py
+│               ├── engine.py       # ProductRecommender orchestrator & scoring ensemble
+│               ├── indexers.py     # LexicalIndexManager (TF-IDF sparse index)
+│               ├── preprocessing.py# Text normalization & product document construction
+│               └── re_ranker.py    # MMR diversity re-ranking algorithm
+├── frontend/
+│   ├── index.html                 # Multi-view SPA (Discover, Admin Catalog, Add Product, Error Page)
+│   ├── style.css                  # Modern dark glassmorphism design system
+│   └── script.js                  # Frontend SPA routing, API fetch client, pagination, & search
+└── data/
+    └── products.json              # Product catalog database
+```
 
-Ensure dependencies are installed in your environment:
+---
+
+## 🚀 Quick Start Guide
+
+### 1. Backend Setup
+
+Install dependencies:
 
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
-### 2. Start Backend Server
+Start the FastAPI application:
 
 ```bash
-python -m uvicorn main:app --reload --port 8000
+# Ensure command is run from the 'backend' directory
+cd backend
+python -m uvicorn app.main:app --reload --port 8000
 ```
 
-*Console log on startup:*
-```text
-[Recommender] Loaded 108 products for indexing.
-[Recommender] TF-IDF lexical matrix indexed.
-[Recommender] Loading SentenceTransformer model 'all-MiniLM-L6-v2'...
-[Recommender] Encoding product embeddings...
-[Recommender] FAISS IndexFlatIP constructed with 108 vectors (dim=384).
-[API] Recommendation engine ready.
+*Backend runs at `http://localhost:8000` (Swagger docs available at `http://localhost:8000/docs`).*
+
+### 2. Frontend Setup
+
+Serve the static single page application using Python's built-in HTTP server:
+
+```bash
+cd frontend
+python -m http.server 3000
 ```
 
-### 3. Open Frontend
-
-Open `frontend/index.html` in your web browser.
+*Access the web UI at `http://localhost:3000`.*
 
 ---
 
 ## 🔌 API Reference
 
-### `POST /recommend`
+### 1. `GET /api/recommend`
+Fetches hybrid AI product recommendations based on occasion.
 
+**Parameters:**
+- `occasion` (query string, required): e.g. `Birthday`, `Diwali`, `Wedding`
+- `limit` (query int, default 12): Number of products to return.
+
+### 2. `GET /api/products`
+Retrieves product catalog items for administrative display.
+
+**Parameters:**
+- `limit` (query int, default 100): Maximum catalog products to retrieve.
+
+### 3. `POST /api/products`
+Dynamically adds a new product to the catalog, updates `products.json`, and triggers real-time vector embedding generation & store upsert.
+
+**Payload:**
 ```json
-// Request Body
 {
-  "occasion": "Wedding",
-  "limit": 12
-}
-
-// Response (Sample item)
-{
-  "id": "cmkzaq7ea0068ns01f4me9ffh",
-  "name": "Rose gold watch",
-  "brand": "KA",
-  "price": "2499",
-  "relevance_score": 0.3842,
-  "dense_score": 0.4125,
-  "lexical_score": 0.1205
+  "name": "Birthday Party Gift Set",
+  "brand": "Joy Gifts",
+  "price": "$39.99",
+  "mainImage": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500&auto=format&fit=crop",
+  "description": "Premium curated gift box containing celebratory treats and candles."
 }
 ```
 
 ---
 
-## 📸 Screen Screenshots & Deliverables
+## �️ Admin Portal Features
 
-- **Backend API Docs**: `http://localhost:8000/docs`
-- **Frontend App**: `frontend/index.html`
+- **Single Page View Switching**: Seamless navigation between Gift Finder and Admin Portal.
+- **Admin Search Bar**: Filter products live by title or brand.
+- **Catalog Pagination**: 10 products per page with intuitive Next/Prev controls.
+- **Dynamic Product Creation**: Instant embedding vector generation upon addition.
+- **Robust Media Fallback**: Automatic image error handling with DOM initial placeholders.
