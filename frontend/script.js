@@ -232,7 +232,7 @@ const recPageInfo   = document.getElementById("rec-page-info");
 
 let recommendedProducts = [];
 let recCurrentPage = 1;
-const REC_PAGE_SIZE = 6;
+const REC_PAGE_SIZE = 8;
 
 function renderRecommendationsPage() {
   if (!recommendedProducts.length) {
