@@ -1,0 +1,22 @@
+# Ignore Docker build context artifacts
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Ignore Python cache & virtualenvs
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+.venv/
+venv/
+ENV/
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+
+# Ignore OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: occasion_ai_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - VECTOR_DB_TYPE=faiss
+      # Qdrant configuration optional:
+      # - VECTOR_DB_TYPE=qdrant
+      # - QDRANT_CLUSTER_ENDPOINT=https://your-cluster.qdrant.tech
+      # - QDRANT_API_KEY=your_key
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    image: nginx:alpine
+    container_name: occasion_ai_frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
