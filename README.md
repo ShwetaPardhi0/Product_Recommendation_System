@@ -48,7 +48,7 @@
 
 ---
 
-## � Modular Folder Structure
+## 📁 Modular Folder Structure
 
 ```text
 Product_Recommendation_System/
@@ -109,6 +109,18 @@ python -m http.server 3000
 
 *Access the web UI at `http://localhost:3000`.*
 
+### 3. Docker Deployment (Recommended)
+
+Run the full stack with Docker Compose:
+
+```bash
+# Build and run containers
+docker-compose up --build
+```
+
+- **Web Frontend**: `http://localhost:3000`
+- **FastAPI Backend**: `http://localhost:8000` (Docs at `http://localhost:8000/docs`)
+
 ---
 
 ## 🔌 API Reference
@@ -142,7 +154,7 @@ Dynamically adds a new product to the catalog, updates `products.json`, and trig
 
 ---
 
-## �️ Admin Portal Features
+## 🛡️ Admin Portal Features
 
 - **Single Page View Switching**: Seamless navigation between Gift Finder and Admin Portal.
 - **Admin Search Bar**: Filter products live by title or brand.
